@@ -4,5 +4,8 @@ grammarMatch
 *.swp
 *.png
 *.zip
+*.html
 facades_eval/
+facades_seg/
 good_facades/
+test.py
