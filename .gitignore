@@ -1,11 +1,12 @@
 build/
 debug/
 grammarMatch
+data/
 *.swp
 *.png
 *.zip
 *.html
+test.py
 facades_eval/
 facades_seg/
 good_facades/
-test.py

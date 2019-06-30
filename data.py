@@ -58,6 +58,9 @@ def main(aoi_dir, html_file_name):
 	html_file += "      <th>Cluster.</th>\n"
 	html_file += "      <th>Facade.</th>\n"
 	html_file += "      <th>Facade Seg.</th>\n"
+	html_file += "      <th>Facade A.</th>\n"
+	html_file += "      <th>Facade B.</th>\n"
+	total_examples = 0
 	aoi_areas = sorted(os.listdir(aoi_dir))
 	for l in range(len(aoi_areas)):
 		clusters = sorted(os.listdir(aoi_dir + '/' + aoi_areas[l]))
@@ -69,14 +72,17 @@ def main(aoi_dir, html_file_name):
 			for j in range(len(seg_images)):
 				facade_img_name = cluster + '/image/' + seg_images[j]
 				seg_img_name = cluster + '/seg/' + seg_images[j]
-				seg_img = cv2.imread(seg_img, cv2.IMREAD_UNCHANGED)
-				# find the rectangle
+				facade_img_a_name = cluster + '/label/' + seg_images[j][: len(seg_images[j]) - 4] + '_A.png'
+				facade_img_b_name = cluster + '/label/' + seg_images[j][: len(seg_images[j]) - 4] + '_B.png'
 
 				html_file += "    <tr>\n"
 				html_file += "      <td>" + aoi_areas[l] + '_' + clusters[i] + '_' + seg_images[j][: len(seg_images[j]) - 4] + "</td>\n"
 				html_file += "      <td><a href=\"" + facade_img_name + "\"><img src=\"" + facade_img_name + "\"/></a></td>\n"
 				html_file += "      <td><a href=\"" + seg_img_name + "\"><img src=\"" + seg_img_name + "\"/></a></td>\n"
+				html_file += "      <td><a href=\"" + facade_img_a_name + "\"><img src=\"" + facade_img_a_name + "\"/></a></td>\n"
+				html_file += "      <td><a href=\"" + facade_img_b_name + "\"><img src=\"" + facade_img_b_name + "\"/></a></td>\n"
 				html_file += "    </tr>\n"
+				total_examples = total_examples + 1
 
 	html_file += "  </table>\n"
 	html_file += "</body>\n"
@@ -85,6 +91,7 @@ def main(aoi_dir, html_file_name):
 	# Save the html file
 	with open(html_file_name, "w") as output_file:
 		output_file.write(html_file)
+	print(total_examples)
 
 
 if __name__ == "__main__":
