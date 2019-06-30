@@ -74,9 +74,12 @@ void ImageOverlay::saveImage() {
 	// Skip if invalid grammar
 	if (m_params.rows <= 0 || m_params.cols <= 0) return;
 	QPixmap original = grab();
-	int top_left_width = 0.5 * (grab().size().width() - pixmap.size().width());
-	int top_left_height = 0.5 * (grab().size().height() -pixmap.size().height());
-	QRect rect(top_left_width, top_left_height, pixmap.size().width(), pixmap.size().height());
+	int topLeft_width = 0.5 * (grab().size().width() - pixmap.size().width());
+	int topLeft_height = 0.5 * (grab().size().height() - pixmap.size().height());
+	int rect_widht = pixmap.size().width();
+	int rect_height = pixmap.size().height();
+	
+	QRect rect(topLeft_width, topLeft_height, rect_widht, rect_height);
 	QPixmap cropped = original.copy(rect);
 	QString segFacadeImagename = facadeImagename;
 	segFacadeImagename.replace(QString("image"), QString("seg"));
