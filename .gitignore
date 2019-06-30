@@ -1,0 +1,8 @@
+build/
+debug/
+grammarMatch
+*.swp
+*.png
+*.zip
+facades_eval/
+good_facades/
