@@ -1,0 +1,10 @@
+python datasets/combine_A_and_B.py --fold_A datasets/data/A --fold_B datasets/data/B --fold_AB datasets/data
+python train.py --dataroot datasets/data --name facades_segs --model pix2pix --direction AtoB
+python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --direction AtoB
+
+python train.py --dataroot datasets/data --name facades_segs --model pix2pix --preprocess crop --direction AtoB
+python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --preprocess crop --direction AtoB
+
+python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --epoch 180 --direction AtoB
+
+v4: 300 epoch 0.001 lr
