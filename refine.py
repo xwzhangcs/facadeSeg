@@ -17,33 +17,23 @@ from skimage.measure import compare_ssim as ssim
 from skimage import io
 import cv2
 import random
-
-train = 240
-val = 80
-test = 50
+total = 378
+train_ratio = 0.5
+train_val_ratio = 0.8
 
 def collect_segs(aoi_dir, data):
 	aoi_areas = sorted(os.listdir(aoi_dir))
 	real_facade_dir = data + '/A'
-	real_facade_dir_train = data + '/A/train'
-	real_facade_dir_val = data + '/A/val'
-	real_facade_dir_test = data + '/A/test'
 	seg_facade_dir = data + '/B'
-	seg_facade_dir_train = data + '/B/train'
-	seg_facade_dir_val = data + '/B/val'
-	seg_facade_dir_test = data + '/B/test'
 
 	if not os.path.exists(real_facade_dir):
 		os.makedirs(real_facade_dir)
-		os.makedirs(real_facade_dir_train)
-		os.makedirs(real_facade_dir_val)
-		os.makedirs(real_facade_dir_test)
 
 	if not os.path.exists(seg_facade_dir):
 		os.makedirs(seg_facade_dir)
-		os.makedirs(seg_facade_dir_train)
-		os.makedirs(seg_facade_dir_val)
-		os.makedirs(seg_facade_dir_test)
+
+	train = int(total * train_ratio * train_val_ratio)
+	val = int(total * train_ratio) - train
 
 	index = 0
 	for l in range(len(aoi_areas)):
@@ -56,92 +46,12 @@ def collect_segs(aoi_dir, data):
 			for j in range(len(seg_images)):
 				facade_img_a_name = cluster + '/label/' + seg_images[j][: len(seg_images[j]) - 4] + '_A.png'
 				facade_img_b_name = cluster + '/label/' + seg_images[j][: len(seg_images[j]) - 4] + '_B.png'
-				if 0 <= index < train:
-					# resize
-					real_facade_name = real_facade_dir_train + '/facade_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 0)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
-					# horizontal flip
-					real_facade_name = real_facade_dir_train + '/facade_h_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_h_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 1)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 1)
-					# vertical flip
-					real_facade_name = real_facade_dir_train + '/facade_v_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_v_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 2)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 2)
-					# both flip / rotate 180
-					real_facade_name = real_facade_dir_train + '/facade_t_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_t_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 3)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 3)
-					# rotate 90
-					real_facade_name = real_facade_dir_train + '/facade_lr_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_lr_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 4)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 4)
-					# rotate 270
-					real_facade_name = real_facade_dir_train + '/facade_rr_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_rr_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 5)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 5)
-					# increase brightness
-					real_facade_name = real_facade_dir_train + '/facade_inc_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_inc_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 6)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 6)
-					# decrease brightness
-					real_facade_name = real_facade_dir_train + '/facade_dec_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_train + '/facade_dec_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 7)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 7)
-				elif train <= index < train + val:
-					real_facade_name = real_facade_dir_val + '/facade_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 0)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
-					# horizontal flip
-					real_facade_name = real_facade_dir_val + '/facade_h_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_h_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 1)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 1)
-					# vertical flip
-					real_facade_name = real_facade_dir_val + '/facade_v_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_v_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 2)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 2)
-					# both flip / rotate 180
-					real_facade_name = real_facade_dir_val + '/facade_t_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_t_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 3)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 3)
-					# rotate 90
-					real_facade_name = real_facade_dir_val + '/facade_lr_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_lr_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 4)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 4)
-					# rotate 270
-					real_facade_name = real_facade_dir_val + '/facade_rr_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_rr_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 5)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 5)
-					# increase brightness
-					real_facade_name = real_facade_dir_val + '/facade_inc_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_inc_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 6)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 6)
-					# decrease brightness
-					real_facade_name = real_facade_dir_val + '/facade_dec_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_val + '/facade_dec_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 7)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 7)
-				else:
-					real_facade_name = real_facade_dir_test + '/facade_' + format(index, '05d') + '.png'
-					seg_facade_name = seg_facade_dir_test + '/facade_' + format(index, '05d') + '.png'
-					data_augmentation(facade_img_a_name, real_facade_name, 286, 0)
-					data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+				real_facade_name = real_facade_dir + '/facade_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir + '/facade_' + format(index, '05d') + '.png'
+				src_img = cv2.imread(facade_img_a_name, cv2.IMREAD_UNCHANGED)
+				cv2.imwrite(real_facade_name, src_img)
+				src_img = cv2.imread(facade_img_b_name, cv2.IMREAD_UNCHANGED)
+				cv2.imwrite(seg_facade_name, src_img)
 				index = index + 1
 
 
@@ -310,15 +220,36 @@ def data_shuffle(src_path, output_path, type):
 
 	if not os.path.exists(real_facade_dir):
 		os.makedirs(real_facade_dir)
-		os.makedirs(real_facade_dir_train)
-		os.makedirs(real_facade_dir_val)
-		os.makedirs(real_facade_dir_test)
+		if type != -1:
+			os.makedirs(real_facade_dir_train)
+			os.makedirs(real_facade_dir_val)
+			os.makedirs(real_facade_dir_test)
 
 	if not os.path.exists(seg_facade_dir):
 		os.makedirs(seg_facade_dir)
-		os.makedirs(seg_facade_dir_train)
-		os.makedirs(seg_facade_dir_val)
-		os.makedirs(seg_facade_dir_test)
+		if type != -1:
+			os.makedirs(seg_facade_dir_train)
+			os.makedirs(seg_facade_dir_val)
+			os.makedirs(seg_facade_dir_test)
+	# shuffle
+	if type == -1:
+		src_data = src_path + '/A'
+		src_data_images = sorted(os.listdir(src_data))
+		src_data_dic = dict(zip(list(range(len(src_data_images))), src_data_images))
+		l = list(src_data_dic.items())
+		random.shuffle(l)
+		src_data_dic = dict(l)
+		index = 0
+		for key, value in src_data_dic.items():
+			src_data_facade_img = src_data + '/' + value
+			src_data_seg_img = src_path + '/B/' + value
+			output_data_facade_img = real_facade_dir + '/facade_' + format(index, '05d') + '.png'
+			output_data_seg_img = seg_facade_dir + '/facade_' + format(index, '05d') + '.png'
+			src_img = cv2.imread(src_data_facade_img, cv2.IMREAD_UNCHANGED)
+			cv2.imwrite(output_data_facade_img, src_img)
+			src_img = cv2.imread(src_data_seg_img, cv2.IMREAD_UNCHANGED)
+			cv2.imwrite(output_data_seg_img, src_img)
+			index = index + 1
 
 	# shuffle train
 	if type == 0:
@@ -375,16 +306,150 @@ def data_shuffle(src_path, output_path, type):
 			index = index + 1
 
 
-def main(aoi_dir, data):
-	# crop_segs(aoi_dir)
+def create_training_dataset(src_path, output_path, bdataAug):
+	real_facade_dir = output_path + '/A'
+	real_facade_dir_train = output_path + '/A/train'
+	real_facade_dir_val = output_path + '/A/val'
+	real_facade_dir_test = output_path + '/A/test'
+	seg_facade_dir = output_path + '/B'
+	seg_facade_dir_train = output_path + '/B/train'
+	seg_facade_dir_val = output_path + '/B/val'
+	seg_facade_dir_test = output_path + '/B/test'
+
+	if not os.path.exists(real_facade_dir):
+		os.makedirs(real_facade_dir)
+		os.makedirs(real_facade_dir_train)
+		os.makedirs(real_facade_dir_val)
+		os.makedirs(real_facade_dir_test)
+
+	if not os.path.exists(seg_facade_dir):
+		os.makedirs(seg_facade_dir)
+		os.makedirs(seg_facade_dir_train)
+		os.makedirs(seg_facade_dir_val)
+		os.makedirs(seg_facade_dir_test)
+
+	train = int(total * train_ratio * train_val_ratio)
+	val = int(total * train_ratio) - train
+
+	index = 0
+	seg_images = sorted(os.listdir(src_path + '/B'))
+	for j in range(len(seg_images)):
+		facade_img_a_name = src_path + '/A/' + seg_images[j]
+		facade_img_b_name = src_path + '/B/' + seg_images[j]
+		if 0 <= index < train:
+			# resize
+			real_facade_name = real_facade_dir_train + '/facade_' + format(index, '05d') + '.png'
+			seg_facade_name = seg_facade_dir_train + '/facade_' + format(index, '05d') + '.png'
+			data_augmentation(facade_img_a_name, real_facade_name, 286, 0)
+			data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+			if bdataAug:
+				# horizontal flip
+				real_facade_name = real_facade_dir_train + '/facade_h_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_h_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 1)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 1)
+				# vertical flip
+				real_facade_name = real_facade_dir_train + '/facade_v_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_v_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 2)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 2)
+				# both flip / rotate 180
+				real_facade_name = real_facade_dir_train + '/facade_t_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_t_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 3)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 3)
+				# rotate 90
+				real_facade_name = real_facade_dir_train + '/facade_lr_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_lr_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 4)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 4)
+				# rotate 270
+				real_facade_name = real_facade_dir_train + '/facade_rr_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_rr_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 5)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 5)
+				# increase brightness
+				real_facade_name = real_facade_dir_train + '/facade_inc_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_inc_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 6)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+				# decrease brightness
+				real_facade_name = real_facade_dir_train + '/facade_dec_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_train + '/facade_dec_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 7)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+		elif train <= index < train + val:
+			real_facade_name = real_facade_dir_val + '/facade_' + format(index, '05d') + '.png'
+			seg_facade_name = seg_facade_dir_val + '/facade_' + format(index, '05d') + '.png'
+			data_augmentation(facade_img_a_name, real_facade_name, 286, 0)
+			data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+			if bdataAug:
+				# horizontal flip
+				real_facade_name = real_facade_dir_val + '/facade_h_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_h_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 1)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 1)
+				# vertical flip
+				real_facade_name = real_facade_dir_val + '/facade_v_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_v_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 2)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 2)
+				# both flip / rotate 180
+				real_facade_name = real_facade_dir_val + '/facade_t_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_t_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 3)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 3)
+				# rotate 90
+				real_facade_name = real_facade_dir_val + '/facade_lr_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_lr_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 4)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 4)
+				# rotate 270
+				real_facade_name = real_facade_dir_val + '/facade_rr_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_rr_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 5)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 5)
+				# increase brightness
+				real_facade_name = real_facade_dir_val + '/facade_inc_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_inc_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 6)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+				# decrease brightness
+				real_facade_name = real_facade_dir_val + '/facade_dec_' + format(index, '05d') + '.png'
+				seg_facade_name = seg_facade_dir_val + '/facade_dec_' + format(index, '05d') + '.png'
+				data_augmentation(facade_img_a_name, real_facade_name, 286, 7)
+				data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+		else:
+			real_facade_name = real_facade_dir_test + '/facade_' + format(index, '05d') + '.png'
+			seg_facade_name = seg_facade_dir_test + '/facade_' + format(index, '05d') + '.png'
+			data_augmentation(facade_img_a_name, real_facade_name, 286, 0)
+			data_augmentation(facade_img_b_name, seg_facade_name, 286, 0)
+		index = index + 1
+
+
+def main(aoi_dir, data, output):
+	# step 0 only run once
 	# collect_segs(aoi_dir, data)
-	data_shuffle('data/data_augmentation', 'data/output', 0)
+	#if not os.path.exists(data + '_shuffle'):
+	#	os.makedirs(data + '_shuffle')
+	#data_shuffle(data, data + '_shuffle', -1)
+
+	# step 1
+	bdataAug = False
+	create_training_dataset(data + '_shuffle', output, bdataAug)
+	if bdataAug:
+		if not os.path.exists(output + '_shuffle'):
+			os.makedirs(output + '_shuffle')
+		data_shuffle(output, output + '_shuffle', 0)
+		data_shuffle(output, output + '_shuffle', 1)
+		data_shuffle(output, output + '_shuffle', 2)
 
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("aoi_dir", help="path to input image folder (e.g., input_data)")
 	parser.add_argument("data", help="path to input image folder (e.g., input_data)")
+	parser.add_argument("output", help="path to input image folder (e.g., input_data)")
 	args = parser.parse_args()
 
-	main(args.aoi_dir, args.data)
+	main(args.aoi_dir, args.data, args.output)
