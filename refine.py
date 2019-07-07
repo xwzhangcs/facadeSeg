@@ -18,7 +18,7 @@ from skimage import io
 import cv2
 import random
 total = 378
-train_ratio = 0.5
+train_ratio = 0.10
 train_val_ratio = 0.8
 
 def collect_segs(aoi_dir, data):
@@ -430,12 +430,13 @@ def create_training_dataset(src_path, output_path, bdataAug):
 def main(aoi_dir, data, output):
 	# step 0 only run once
 	# collect_segs(aoi_dir, data)
-	#if not os.path.exists(data + '_shuffle'):
-	#	os.makedirs(data + '_shuffle')
-	#data_shuffle(data, data + '_shuffle', -1)
-
+	'''
+	if not os.path.exists(data + '_shuffle'):
+		os.makedirs(data + '_shuffle')
+	data_shuffle(data, data + '_shuffle', -1)
+	'''
 	# step 1
-	bdataAug = False
+	bdataAug = True
 	create_training_dataset(data + '_shuffle', output, bdataAug)
 	if bdataAug:
 		if not os.path.exists(output + '_shuffle'):

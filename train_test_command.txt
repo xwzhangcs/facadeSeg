@@ -1,6 +1,6 @@
 python datasets/combine_A_and_B.py --fold_A datasets/data/A --fold_B datasets/data/B --fold_AB datasets/data
 python train.py --dataroot datasets/data --name facades_segs --model pix2pix --direction AtoB
-python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --direction AtoB
+python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --num_test --direction AtoB
 
 python train.py --dataroot datasets/data --name facades_segs --model pix2pix --preprocess crop --direction AtoB
 python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --preprocess crop --direction AtoB
@@ -8,3 +8,9 @@ python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --
 python test.py --dataroot ./datasets/data --name facades_segs --model pix2pix --epoch 180 --direction AtoB
 
 v4: 300 epoch 0.001 lr
+
+python train.py --dataroot datasets/data --name facades_segs --model pix2pix --load_size 156 --crop_size 128 --netG unet_128 --direction AtoB
+python test.py --dataroot datasets/data --name facades_segs --model pix2pix --load_size 156 --crop_size 128 --netG unet_128 --direction AtoB
+
+python datasets/combine_A_and_B.py --fold_A datasets/output_10_shuffle/A --fold_B datasets/output_10_shuffle/B --fold_AB datasets/output_10_shuffle
+python train.py --dataroot datasets/output_10_shuffle --name facades_segs_10 --model pix2pix --gpu_ids 7 --direction AtoB
