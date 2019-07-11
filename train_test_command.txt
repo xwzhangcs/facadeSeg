@@ -13,4 +13,8 @@ python train.py --dataroot datasets/data --name facades_segs --model pix2pix --l
 python test.py --dataroot datasets/data --name facades_segs --model pix2pix --load_size 156 --crop_size 128 --netG unet_128 --direction AtoB
 
 python datasets/combine_A_and_B.py --fold_A datasets/output_10_shuffle/A --fold_B datasets/output_10_shuffle/B --fold_AB datasets/output_10_shuffle
-python train.py --dataroot datasets/output_10_shuffle --name facades_segs_10 --model pix2pix --gpu_ids 7 --direction AtoB
+python train.py --dataroot datasets/manual --name facades_segs_manual --model pix2pix --direction AtoB
+python test.py --dataroot datasets/manual --name facades_segs_manual --model pix2pix --num_test 328 --direction AtoB
+python train.py --dataroot datasets/manual --name facades_segs_manual --model pix2pix --netD n_layers --n_layers_D 2 --direction AtoB
+
+python train.py --dataroot datasets/data --name facades_segs --model pix2pix --gpu_ids 3 --netD n_layers --n_layers_D 2 --direction AtoB
